@@ -1,0 +1,28 @@
+select count(employee_id) employee_total_cnt, department from employees
+group by department 
+order by employee_total_cnt
+
+select first_name,count(employee_id) cnt
+from employees 
+group by first_name
+order by cnt desc
+
+select department
+from employees
+group by department
+
+
+
+select substring(email,position('@' in email)+1), count(*) total_number
+from employees
+where email is not null
+group by substring(email,position('@' in email)+1) 
+order by total_number desc
+
+
+
+select gender,region_id, min(salary) min_salary,max(salary) max_salary ,
+round(avg(salary)) round_salary
+from employees
+group by gender,region_id
+order by gender,region_id

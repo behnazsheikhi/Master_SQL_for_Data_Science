@@ -1,0 +1,55 @@
+-- a query that show the department name that has more than 38 employees
+-- 1. using correlated subquery
+select department,
+      (select max(salary) from employees e2 where t.department=e2.department) as max_salary
+from departments t where 38< 
+      (select count(*) from employees e where e.department=t.department)
+	  
+-- 2. with out correlated subquery	  
+select department,count(*) cnt from employees
+group by department 
+having count(*)>38
+order by cnt
+
+-- write a query that show the department and 
+-- the two employees with the min and max salary in the department 
+-- and a column that shows whether it is highest or lowest salary in department
+
+-- 1. 
+select department,first_name,salary, case 
+       when salary=max_salary then 'highest salary'
+	   when salary=min_salary then 'lowest salary'
+	   end
+from 
+(
+select department,first_name,salary,
+    (select max(salary) from employees where department=e1.department) as max_salary,
+	(select min(salary) from employees where department=e1.department) as min_salary 
+from employees e1
+) a
+where salary in (min_salary,max_salary) 
+order by department
+
+-- 2. 
+select * from (
+select department,
+	  (select first_name 
+	   from employees 
+	   where department=t.department and salary=max_salary),max_salary as salary,'highest_salary'
+from(select department,max(salary) max_salary
+     from employees 
+     group by department
+     order by department) t
+union 
+select department,
+	  (select first_name 
+	   from employees 
+	   where department=t.department and salary=min_salary),min_salary as salary,'lowest_salary'
+from(select department,min(salary) min_salary
+     from employees 
+     group by department
+     order by department) t
+)a
+order by department,salary desc
+
+ 

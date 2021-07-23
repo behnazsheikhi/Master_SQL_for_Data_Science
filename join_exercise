@@ -1,0 +1,33 @@
+-- Write a query that shows the student's name, 
+-- the courses the student is taking and the professors that teach that course.
+
+select * from students
+select * from courses
+select * from professors
+select * from student_enrollment
+select * from teach
+
+select distinct student_name,c.course_title,last_name professor_name 
+from students s
+inner join student_enrollment se on s.student_no=se.student_no
+inner join courses c on c.course_no=se.course_no
+inner join teach t on t.course_no=c.course_no
+order by student_name
+
+--  write a query that returns employees whose salary 
+-- is above average for their given department.
+
+select first_name
+salary from employees e 
+where salary >(select round(avg(salary)) from
+			   employees 
+			   where department=e.department)
+			   
+-- Write a query that returns ALL of the students 
+-- as well as any courses they may or may not be taking
+
+select s.student_no,student_name,c.course_no from students s 
+left join student_enrollment se on s.student_no=se.student_no
+left join courses c on se.course_no=c.course_no
+order by student_no
+

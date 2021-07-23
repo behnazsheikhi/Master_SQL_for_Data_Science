@@ -1,0 +1,39 @@
+-- UPPER upper
+-- LOWER lower
+-- LENGTH length
+-- || for concatination
+select first_name || ' ' || last_name  full_name from employees
+select upper(first_name) as upper_name, lower(first_name) as lower_name
+, first_name || ' ' || last_name as full_name,length(first_name) from employees
+
+-- TRIM trim
+select trim ('  Hello  World!  ')
+
+-- boolean condition as a column
+select first_name from employees where salary>140000
+select first_name from employees where salary<=140000
+select * from (select first_name,(salary>140000) highly_paid from employees 
+order by salary) tb where highly_paid='false'
+
+select first_name,('Tools' in (department)) from employees
+
+select first_name,department,((department) like '%ols%') from employees
+
+--  
+-- substring
+select substring('This is a test sentence!' from 1 for 4) as test_extraction
+select substring('This is a test sentence!' from 11 for 4) as test_extraction
+select substring('This is a test sentence!' from 11 ) as test_extraction
+
+--  
+select department, replace(department,'Clothing','Specific') as changed_column,
+replace(department, department,department || '  department')  joint_column 
+from employees
+-- 
+-- extract the position
+select substring(email from position('@' in email)+1 ) as domain
+from employees
+-- 
+-- coalesce
+select email,coalesce(email,'None') as email
+from employees

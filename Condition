@@ -1,0 +1,108 @@
+-- write a query to show total number of people with specific salary range
+select t.salary_category,count(*) as total_number_category from (
+	select first_name,salary, 
+case 
+    when salary<=100000 then 'Under range salary'
+	when salary>100000 and salary<160000 then 'Well paid salary'
+	when salary>=160000 then 'Executive'
+	else 'Unpaid'
+end as salary_category
+from employees
+) t
+group by salary_category
+
+select sum(case when salary<100000 then 1 else 0) as 'h'
+
+
+select category,count(*) cnt from(
+	select first_name,salary, 
+		case
+		when salary<100000 then 1 
+		when salary>100000 and salary<160000 then 2
+		when salary>160000 then 3
+		end as category
+	from employees
+	order by salary
+)t
+group by category 
+order by cnt
+
+select
+sum(case when salary<=100000 then 1 else 0 end) as Under_range_salary,
+sum(case when salary>100000 and salary<160000 then 1 else 0 end) as Well_paid_salary,
+sum(case when salary>=160000 then 1 else 0 end ) as Executive
+from employees
+
+select
+  max(case when category = '1' then cnt end) as Under_range_salary,
+  max(case when category = '2' then cnt end) as Well_paid_salary,
+  max(case when category = '3' then cnt end) as Executive
+from (select category,count(*) cnt from(
+	select first_name,salary, 
+		case
+		when salary<100000 then 1 
+		when salary>100000 and salary<160000 then 2
+		when salary>160000 then 3
+		end as category
+	from employees
+	order by salary
+)t
+group by category ) a
+
+-- use aggregate function to convert rows to columns
+-- 1. using subquery
+select 
+	max(case when department='Tools' then cnt end) as Tools_department,
+	max(case when department='Sports' then cnt end) as Sports_department,
+	max(case when department='Computers' then cnt end) as Computers_department,
+	max(case when department='Clothing' then cnt end) as Clothing_department
+from (select department,count(*) cnt 
+	 from employees
+     where department in ('Sports','Tools','Computers','Clothing')
+     group by department) t
+
+-- 1. without subquery
+select 
+	sum(case when department='Tools' then 1 else 0 end) as Tools_department,
+	sum(case when department='Sports' then 1 else 0 end ) as Sports_department,
+	sum(case when department='Clothing' then 1 else 0 end) as Clothing_department,
+	sum(case when department='Computers' then 1 else 0 end) as Computers_department
+from employees 
+where department in ('Sports','Tools','Clothing','Computers')
+
+
+
+
+select first_name,
+(case when region_id=1 then (select country from regions where region_id=1) end) as region_id_1,
+(case when region_id=2 then 'United States' end) as region_id_2,
+(case when region_id=3 then 'United States' end) as region_id_3,
+(case when region_id=4 then 'Asia' end) as region_id_4,
+(case when region_id=5 then 'Asia' end) as region_id_5,
+(case when region_id=6 then 'Canada' end) as region_id_6,
+(case when region_id=7 then 'Canada' end) as region_id_7
+from employees
+
+--  write a query to show the number of employees in each country
+-- first way
+select 
+sum(case when region_id in (1,2,3) then 1 else 0 end) as United_States,
+sum(case when region_id in (4,5) then 1 else 0 end) as Asia,
+sum(case when region_id in (6,7) then 1 else 0 end) as Canada
+from employees 		
+
+-- second way
+
+select count(region_id_1)+count(region_id_2)+count(region_id_3) as United_States,
+	   count(region_id_4)+count(region_id_5) as Asia,
+	   count(region_id_6)+count(region_id_7) as Canada
+from (select first_name,
+			(case when region_id=1 then (select country from regions where region_id=1) end) as region_id_1,
+			(case when region_id=2 then 'United States' end) as region_id_2,
+			(case when region_id=3 then 'United States' end) as region_id_3,
+			(case when region_id=4 then 'Asia' end) as region_id_4,
+			(case when region_id=5 then 'Asia' end) as region_id_5,
+			(case when region_id=6 then 'Canada' end) as region_id_6,
+			(case when region_id=7 then 'Canada' end) as region_id_7
+	  from employees) t		
+											

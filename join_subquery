@@ -1,0 +1,40 @@
+-- write a query that shows the number of each employees in each department
+-- and a total record at the end 
+select distinct department,count(*) from employees
+group by department
+union all
+select 'Total', count(*) from employees
+order by department
+
+-- write a query that shows the first and last employees in the company
+-- first solution
+select first_name,department,hire_date,country 
+from employees e
+inner join regions r on e.region_id=r.region_id
+where hire_date <= all (select distinct hire_date from employees)
+or hire_date >= all (select distinct hire_date from employees)
+
+-- second solution
+(select first_name,department,hire_date,country
+from employees e inner join 
+regions r on e.region_id=r.region_id 
+where hire_date=(select min(hire_date) from employees)
+limit 1)
+union 
+select first_name,department,hire_date,country
+from employees e inner join regions r 
+on e.region_id=r.region_id
+where hire_date=(select max(hire_date) from employees)
+order by hire_date
+-- third solution
+(select first_name,department,hire_date,country
+from employees e inner join regions r
+on e.region_id=r.region_id
+order by hire_date 
+limit 1)
+union 
+(select first_name,department,hire_date,country
+from employees e inner join regions r
+on e.region_id=r.region_id
+order by hire_date desc
+limit 1)
